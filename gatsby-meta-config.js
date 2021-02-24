@@ -1,5 +1,5 @@
 module.exports = {
-  title: `hodoo.devlog`,
+  title: `HODOO.me`,
   description: `Blog posted about ...`,
   author: `hodoodang`,
   introduction: `Record what I wants`,
