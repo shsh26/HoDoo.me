@@ -5,7 +5,7 @@ category: 'development'
 draft: false
 ---
 
-> 해당 포스트는 Deep Learning Zero To All, 모두를 위한 딥러닝 시즌2 PyTorch 강의를 보고 정리한 글입니다.[Zero To All](images/zeroToall.jpg)
+> 해당 포스트는 Deep Learning Zero To All, 모두를 위한 딥러닝 시즌2 PyTorch 강의를 보고 정리한 글입니다. [Zero To All](https://www.youtube.com/playlist?list=PLQ28Nx3M4JrhkqBVIXg-i5_CVVoS1UzAv)
 
 ## Vector, Matrix and Tensor
 
