@@ -1,7 +1,7 @@
 ---
-title: '[PyTorch] 모두를 위한 딥러닝 Lab-01-1'
+title: '[PyTorch] 모두를 위한 딥러닝 Lab-01'
 date: 2021-01-23 20:42:13
-category: 'development'
+category: 'deeplearning'
 draft: false
 ---
 
