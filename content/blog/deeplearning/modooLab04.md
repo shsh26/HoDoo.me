@@ -323,3 +323,207 @@ for epoch in range(nb_epochs+1):
     Epoch   18/20 Cost: 0.227799
     Epoch   19/20 Cost: 0.227762
     Epoch   20/20 Cost: 0.227732
+
+# Loading Data
+
+## Data in Real World
+
+지금까지는 하나 혹은 적은 양의 데이터를 가지고 예측하는 과정을 진행했다.  
+그러나 현실에서는 제대로 된 예측을 하기 위해서는 많은 양의 데이터를 통해 예측하는 것이 대부분이다.
+
+즉, 복잡한 머신러닝 모델을 학습하려면 엄청난 양의 데이터가 필요하다.  
+인터넷에 공개된 데이터셋들을 봐도 대부분이 적어도 수십만 개의 데이터를 제공한다.
+
+## Data in the Real World: Problem
+
+하지만 실제로 제공되거나 만든 데이터셋을 사용하는 경우 또다른 문제가 발생한다.
+
+- 엄청난 양의 데이터를 한 번에 학습시킬 수 없다.
+  - 너무 느리다.
+  - 하드웨어적으로 불가능하다.
+- 그렇다면 일부분의 데이터로만 학습하면 어떨까?
+
+## Minibatch Gradient Descent
+
+전체 데이터를 균일하게 나눠서 학습하자!
+
+![Minibatch](images/minibatch.png 'Minibatch')
+
+## Minibatch Gradient Descent: Effects
+
+- 업데이트를 좀 더 빠르게 할 수 있다.
+- 전체 데이터를 쓰지 않아서 잘못된 방향으로 업데이트 할 수도 있다.
+
+![Minibatch Gradient Descent](images/minibatch_gradient_descent.png)
+
+```python
+from torch.utils.data import Dataset    # torch.utils.data.Dataset 상속
+```
+
+```python
+class CustomDataset(Dataset):
+    def __init__(self):
+        self.x_data = [[ 73,  80,  75],
+                       [ 93,  88,  93],
+                       [ 89,  91,  90],
+                       [ 96,  98, 100],
+                       [ 73,  66,  70]]
+        self.y_data = [[152], [185], [180], [196], [142]]
+
+    def __len__(self):
+        """이 데이터셋의 총 데이터 수
+        """
+        return len(self.x_data)
+
+    def __getitem__(self, idx):
+        """어떠한 인덱스 idx를 받았을 때,
+           그에 상응하는 입출력 데이터 반환
+        """
+        x = torch.FloatTensor(self.x_data[idx])
+        y = torch.FloatTensor(self.y_data[idx])
+
+        return x, y
+```
+
+```python
+dataset = CustomDataset()
+```
+
+```python
+from torch.utils.data import DataLoader    # torch.utils.data.DataLoader 사용
+```
+
+```python
+dataloader = DataLoader(
+    dataset,
+    batch_size=2,
+    shuffle=True,
+)
+```
+
+`batch_size = 2`
+
+- 각 minibatch의 크기
+- 통상적으로 2의 제곱수로 설정한다.(16, 32, 64, 128, 256, 512...)
+
+`shuffle = True`
+
+- Epoch 마다 데이터셋을 섞어서, 데이터가 학습되는 순서를 바꾼다.
+
+```python
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import torch.optim as optim
+```
+
+```python
+# For reproducibility
+torch.manual_seed(1)
+```
+
+    <torch._C.Generator at 0x7f31663f79b0>
+
+```python
+class MultivariateLinearRegressionModel(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.linear = nn.Linear(3, 1)
+
+    def forward(self, x):
+        return self.linear(x)
+```
+
+```python
+# 모델 초기화
+model = MultivariateLinearRegressionModel()
+# optimizer 설정
+optimizer = optim.SGD(model.parameters(), lr=1e-5)
+
+nb_epochs = 20
+for epoch in range(nb_epochs + 1):
+    for batch_idx, samples in enumerate(dataloader):
+        x_train, y_train = samples
+
+        # H(x) 계산
+        prediction = model(x_train)
+
+        # cost 계산
+        cost = F.mse_loss(prediction, y_train)
+
+        # cost로 H(x) 개선
+        optimizer.zero_grad()
+        cost.backward()
+        optimizer.step()
+
+        # 20번마다 로그 출력
+        print(f'Epoch {epoch:4d}/{nb_epochs} \
+            Batch {batch_idx+1}/{len(dataloader)} \
+            Cost: {cost.item():.6f}')
+```
+
+    Epoch    0/20             Batch 1/3             Cost: 47617.179688
+    Epoch    0/20             Batch 2/3             Cost: 19737.009766
+    Epoch    0/20             Batch 3/3             Cost: 6020.775879
+    Epoch    1/20             Batch 1/3             Cost: 1336.622803
+    Epoch    1/20             Batch 2/3             Cost: 664.452698
+    Epoch    1/20             Batch 3/3             Cost: 95.306343
+    Epoch    2/20             Batch 1/3             Cost: 47.680702
+    Epoch    2/20             Batch 2/3             Cost: 16.383287
+    Epoch    2/20             Batch 3/3             Cost: 10.639208
+    Epoch    3/20             Batch 1/3             Cost: 0.048456
+    Epoch    3/20             Batch 2/3             Cost: 3.750019
+    Epoch    3/20             Batch 3/3             Cost: 0.005905
+    Epoch    4/20             Batch 1/3             Cost: 1.368384
+    Epoch    4/20             Batch 2/3             Cost: 1.069586
+    Epoch    4/20             Batch 3/3             Cost: 0.009247
+    Epoch    5/20             Batch 1/3             Cost: 0.993399
+    Epoch    5/20             Batch 2/3             Cost: 0.167429
+    Epoch    5/20             Batch 3/3             Cost: 2.824529
+    Epoch    6/20             Batch 1/3             Cost: 2.004374
+    Epoch    6/20             Batch 2/3             Cost: 0.398187
+    Epoch    6/20             Batch 3/3             Cost: 0.697975
+    Epoch    7/20             Batch 1/3             Cost: 0.643849
+    Epoch    7/20             Batch 2/3             Cost: 1.880045
+    Epoch    7/20             Batch 3/3             Cost: 0.001253
+    Epoch    8/20             Batch 1/3             Cost: 0.545438
+    Epoch    8/20             Batch 2/3             Cost: 1.044388
+    Epoch    8/20             Batch 3/3             Cost: 2.376422
+    Epoch    9/20             Batch 1/3             Cost: 0.915216
+    Epoch    9/20             Batch 2/3             Cost: 1.394321
+    Epoch    9/20             Batch 3/3             Cost: 1.566202
+    Epoch   10/20             Batch 1/3             Cost: 2.057809
+    Epoch   10/20             Batch 2/3             Cost: 0.961601
+    Epoch   10/20             Batch 3/3             Cost: 0.268345
+    Epoch   11/20             Batch 1/3             Cost: 1.692765
+    Epoch   11/20             Batch 2/3             Cost: 0.533374
+    Epoch   11/20             Batch 3/3             Cost: 1.374829
+    Epoch   12/20             Batch 1/3             Cost: 1.289912
+    Epoch   12/20             Batch 2/3             Cost: 0.161910
+    Epoch   12/20             Batch 3/3             Cost: 2.386454
+    Epoch   13/20             Batch 1/3             Cost: 0.910262
+    Epoch   13/20             Batch 2/3             Cost: 0.789821
+    Epoch   13/20             Batch 3/3             Cost: 3.568234
+    Epoch   14/20             Batch 1/3             Cost: 1.863038
+    Epoch   14/20             Batch 2/3             Cost: 0.542061
+    Epoch   14/20             Batch 3/3             Cost: 0.000122
+    Epoch   15/20             Batch 1/3             Cost: 0.774481
+    Epoch   15/20             Batch 2/3             Cost: 1.998641
+    Epoch   15/20             Batch 3/3             Cost: 0.998658
+    Epoch   16/20             Batch 1/3             Cost: 1.450517
+    Epoch   16/20             Batch 2/3             Cost: 0.302300
+    Epoch   16/20             Batch 3/3             Cost: 1.962718
+    Epoch   17/20             Batch 1/3             Cost: 0.136075
+    Epoch   17/20             Batch 2/3             Cost: 1.014145
+    Epoch   17/20             Batch 3/3             Cost: 3.053588
+    Epoch   18/20             Batch 1/3             Cost: 1.190853
+    Epoch   18/20             Batch 2/3             Cost: 1.414228
+    Epoch   18/20             Batch 3/3             Cost: 0.557225
+    Epoch   19/20             Batch 1/3             Cost: 0.663491
+    Epoch   19/20             Batch 2/3             Cost: 0.866407
+    Epoch   19/20             Batch 3/3             Cost: 2.760072
+    Epoch   20/20             Batch 1/3             Cost: 0.333792
+    Epoch   20/20             Batch 2/3             Cost: 1.815092
+    Epoch   20/20             Batch 3/3             Cost: 0.995763
+
+결과를 보면 앞에서 설명한 그래프와 같이 Cost 값이 튀는 것을 볼 수 있다.
