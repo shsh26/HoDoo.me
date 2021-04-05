@@ -33,3 +33,34 @@ Ubuntu, CentOS, RedHat과 같은 OS들은 모두 동일한 Linux 커널을 사�
 # Docker Install
 
 도커는 현재 Linux를 포함하여 Windows, Mac OS에서도 설치 및 사용이 가능하지만 애초에 도커라는 것이 Linux 커널을 전제로 만들어 졌기 때문에 실제 Linux 상에서 사용하는 도커만큼의 성능이 나오지 않으며, GPU 또한 사용이 불가능하다.
+
+## Windows docker
+
+[docker/get-started](https://www.docker.com/get-started)에서 `Docker Desktop for Windows` 설치
+
+`docker` command 사용을 위한 환경 변수 설정
+
+설치된 Docker의 결로 확인
+
+`docker`: C:\Program Files\Docker\Docker\resources  
+`docker-compose`: C:\Program Files\Docker\Docker\resources\bin
+
+제어판 > 시스템 및 보안 > 시스템
+
+![system](./images/System.png)
+
+고급 시스템 설정 클릭
+
+![properties](./images/properties.png)
+
+고급 탭 환경 변수 클릭
+
+![path](./images/path.png)
+
+docker, docker-compose의 각 실행 파일의 경로 등록
+
+![docker path](./images/docker-path.png)
+
+명령어 동작 확인
+
+![docker command](./images/docker-command.png)
