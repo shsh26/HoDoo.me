@@ -1,7 +1,7 @@
 ---
 title: '[Docker] 모두를 위한 딥러닝 Docker'
 date: 2021-01-20 20:42:13
-thumbnail: './images/docker.jpg'
+thumbnail: {./images/docker.jpg}
 category: 'devops'
 draft: false
 ---
